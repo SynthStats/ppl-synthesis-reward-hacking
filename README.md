@@ -1,93 +1,85 @@
 # PPL synthesis reward hacking
 
-<p align="center">
-  <a href="https://github.com/youqad/ppl-synthesis-reward-hacking/actions/workflows/ci.yml"><img src="https://github.com/youqad/ppl-synthesis-reward-hacking/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+[![CI](https://github.com/SynthStats/ppl-synthesis-reward-hacking/actions/workflows/ci.yml/badge.svg)](https://github.com/SynthStats/ppl-synthesis-reward-hacking/actions/workflows/ci.yml)
   <img src="https://img.shields.io/badge/python-3.11-3670A0?logo=python&logoColor=ffdd54" alt="Python 3.11">
   <img src="https://img.shields.io/badge/pixi-package%20manager-yellow?logo=anaconda" alt="Pixi">
-</p>
 
-Experiments on likelihood hacking in probabilistic-program synthesis (PyMC/Stan), with scoring, normalization checks, and safety gates.
+We asked Qwen3 Coder 30B for a Bayesian model of binary outcomes in a probabilistic programming language (PPL), and one of the PyMC programs it wrote observes the same data twice, under two different parameterizations: the log-likelihood it reports is 15.0 above that of the intended observation alone. That second observation gives the program a data density that does not integrate to one over the data space. We call such programs exploits, and writing them likelihood hacking (LH). The scripts below train language models with a likelihood-based reward to write PyMC and Stan programs, and measure how often the trained models write exploits.
 
 ## Setup
 
 ```bash
-git clone https://github.com/youqad/ppl-synthesis-reward-hacking.git --recurse-submodules 
+git clone https://github.com/SynthStats/ppl-synthesis-reward-hacking.git --recurse-submodules 
 cd ppl-synthesis-reward-hacking
-pixi install
+# Pixi is the package/environment manager
+# install Python 3.11 and the dev dependencies used by the commands below
+pixi install -e dev
+# copy .env.example, which lists every key, and fill in the ones your run needs
 cp .env.example .env
 ```
 
-Fill in `.env` (see `.env.example` for all keys). Only `TINKER_API_KEY` is needed for basic Tinker training. Judge monitoring additionally needs an LLM key (`OPENAI_API_KEY` by default); the SStan transpiler needs `ZHIPUAI_API_KEY`. W&B keys are needed for sweep-based runs.
-
-Source it before any API-dependent command:
-
 ```bash
-set -a && source .env && set +a
+# .env
+TINKER_API_KEY=   # Tinker is a remote model-training API (a basic run needs no other key)
+WANDB_API_KEY=    # W&B hyperparameter sweeps
+WANDB_ENTITY=     # W&B user or team
+WANDB_PROJECT=ppl-synthesis-reward-hacking
+OPENAI_API_KEY=   # the LLM judge, which can monitor training or gate its rewards (an OpenAI model by default); also train/sstan_gate=enforce
+ZHIPUAI_API_KEY=  # default key for eval_sstan_exemplars.py and the standalone PyMC-to-Stan LLM transpiler
+# SafeStan (SStan) checks Stan programs for unsafe likelihood constructs
+# optional standalone transpiler overrides (defaults shown)
+# PSRH_TRANSPILER_MODEL=anthropic/glm-5
+# PSRH_TRANSPILER_API_KEY_ENV=ZHIPUAI_API_KEY
+# PSRH_TRANSPILER_API_BASE=https://api.z.ai/api/anthropic
+# PSRH_TRANSPILER_PROVIDER=anthropic
+# train/sstan_gate=enforce selects OPENAI_API_KEY through train.sstan_transpiler_api_key_env;
+# that explicit setting takes precedence over PSRH_TRANSPILER_API_KEY_ENV
+ANTHROPIC_API_KEY= # optional additional provider for multi-model evaluation
+OPENROUTER_API_KEY= # optional additional provider for multi-model evaluation
+RUNPOD_API_KEY=   # optional; required for RunPod GPU training
 ```
 
-Recommended verification before longer runs:
-
 ```bash
+# load the keys before any command that calls an API
+set -a && source .env && set +a
+
+# quick checks, about two minutes each and with no training or API key: both run hardcoded programs
+# through the scorer, the normalization checker (does the data density integrate to one?),
+# the heuristic detector (exploit-pattern matching) and the SafePyMC gate
+# (check_pymc_model: a structural check on the instantiated PyMC model and its compiled graph)
+pixi run -e dev pytest tests/integration/test_e2e_exploit_pipeline.py -v
+# the script needs no GPU either, and runs 10 exploit families and 2 honest baselines
+pixi run -e dev python scripts/smoke_test_exploit.py
+
+# before a long run, the full test suite (a few minutes)
 pixi run -e dev pytest tests/ -x
 ```
 
-For a faster smoke check, run `pixi run -e dev pytest tests/integration/test_e2e_exploit_pipeline.py -v` or `pixi run -e dev python scripts/smoke_test_exploit.py` first.
-
 ## Entry points
 
-| Entry point | Keys needed | Notes |
-|---|---|---|
-| `scripts/smoke_test_exploit.py` | none | detection pipeline on hardcoded programs, ~2 min |
-| `pixi run -e dev pytest tests/ -x` | none | full test suite; recommended before long runs, optional for quickstart |
-| `scripts/eval_normalization.py` | none | offline normalization check on existing runs |
-| `scripts/eval_taxonomy.py` | none | heuristic exploit taxonomy on existing runs |
-| `scripts/eval_safety_gate.py` | none | SafePyMC gate evaluation |
-| `scripts/hydra_train_tinker.py` | `TINKER_API_KEY` | Tinker API training (no GPU); add `train/monitoring_mode=judge_evolving` for LLM judge, `train/sstan_gate=enforce` for SStan gate, `train/judge_gate=enforce` for judge gate |
-| `scripts/create_wandb_sweep.py` | + `WANDB_API_KEY` | create sweep, then run agents with `wandb agent` |
-| `scripts/hydra_train_trl.py` | GPU (40+ GB VRAM) | local TRL GRPO training |
-| `scripts/trl_reward_hacking_stan.py` | GPU + cmdsafestan | TRL with SafeStan checker |
-| `scripts/eval_sstan_exemplars.py` | `ZHIPUAI_API_KEY` | SafeStan on exemplars; see [SafeStan guide](docs/safestan-guide.md) |
-| `scripts/evaluate_safestan_mitigation.py` | `ZHIPUAI_API_KEY` | SafeStan labeled suite |
-| `scripts/evaluate_transpiler_fidelity.py` | `ZHIPUAI_API_KEY` | transpiler fidelity audit |
-
-Judge monitoring and judge gate use `OPENAI_API_KEY` by default. SStan gate and SafeStan evaluation use `ZHIPUAI_API_KEY` for the PyMC-to-Stan transpiler.
-
-## Documentation
-
-| Document | What it covers |
-|---|---|
-| [Quickstart](docs/quickstart.md) | Three runnable paths from zero to LH signal |
-| [Architecture](docs/architecture.md) | Module map, training flow, detection stack |
-| [Configuration](docs/configuration.md) | Hydra groups, top knobs, environment variables, recipes |
-| [SafeStan guide](docs/safestan-guide.md) | Offline evaluation, online gate, input format |
-| [Scoring methods](docs/scoring.md) | Reward metrics, normalization algorithm, detection matrix |
-| [Base-rate exploits](docs/base_rate_exploits.md) | Annotated programs from the untrained-model sweep |
-| [SafeStan integration provenance](docs/provenance/safestan_integration.md) | Upstream attribution and commit-level provenance |
-
-## Authorship and provenance
-
-The staged Stan integration path in this repository is integrated from upstream
-SafeStan/cmdsafestan work. The current opt-in staging is for runtime isolation
-and paper-track comparability, not a statement about contribution quality or
-ownership. Attribution is tracked in git commit metadata and upstream commit
-references. See the full provenance record in
-[`docs/provenance/safestan_integration.md`](docs/provenance/safestan_integration.md).
-
-## Smoke test
-
-Verifies the detection pipeline without training or API keys:
-
-```bash
-pixi run -e dev python scripts/smoke_test_exploit.py
+```text
+entry point                              keys needed        notes
+# Hydra composes training configuration from YAML groups and command-line overrides
+# TRL (Transformer Reinforcement Learning) is the local training library;
+# GRPO (Group Relative Policy Optimization) is the training algorithm
+# cmdsafestan is the Python interface to the SafeStan compiler
+scripts/smoke_test_exploit.py            none               detection pipeline on hardcoded programs, ~2 min
+pixi run -e dev pytest tests/ -x         none               full test suite; recommended before long runs, optional for quickstart
+scripts/eval_normalization.py            none               offline normalization check on existing runs
+scripts/eval_taxonomy.py                 none               heuristic exploit taxonomy on existing runs
+scripts/eval_safety_gate.py              none               SafePyMC gate evaluation
+scripts/hydra_train_tinker.py            TINKER_API_KEY     Tinker API training (no GPU); add train/monitoring_mode=judge_evolving for LLM judge, train/sstan_gate=enforce for SStan gate (OPENAI_API_KEY by default), train/judge_gate=enforce for judge gate
+scripts/create_wandb_sweep.py            + WANDB_API_KEY    create sweep, then run agents with wandb agent
+scripts/hydra_train_trl.py               GPU (40+ GB VRAM)  local TRL GRPO training
+scripts/trl_reward_hacking_stan.py       GPU + cmdsafestan  TRL with SafeStan checker
+scripts/eval_sstan_exemplars.py          ZHIPUAI_API_KEY    SafeStan on exemplars; see SafeStan guide (docs/safestan-guide.md)
+scripts/evaluate_safestan_mitigation.py  none               offline SafeStan labeled suite from pre-translated Stan
+scripts/evaluate_transpiler_fidelity.py  none               offline transpiler fidelity audit from pre-translated Stan
 ```
-
-Runs 10 hardcoded exploit families and 2 honest baselines through the scorer, normalization checker, heuristic detector, and SafePyMC gate. No API keys or GPU required; takes about 2 minutes.
 
 ## Base-rate exploit sweep
 
-We measured whether untrained (base/instruct) LLMs produce exploit-containing PyMC programs at any nonzero rate. Each model was prompted 200 times (20 prompts x 10 samples) to write a Bayesian coin-flip model. Each completion went through code extraction, string-level exploit detection, execution, structural checks (`check_pymc_model`), scoring, fabricated-data detection, and a data-perturbation test.
-
-### Results (200 completions per model, AWS Bedrock, Feb 2026)
+Do untrained base and instruct models already write such programs? We asked each model in the table below for a Bayesian coin-flip model, through AWS Bedrock in February 2026, with 20 prompts and 10 samples per prompt (so 200 completions per model). Each completion was extracted, scanned for exploit strings, run, checked by `check_pymc_model` and scored, and then underwent two integrity checks from [`evaluation/integrity_checks.py`](src/ppl_synthesis_reward_hacking/evaluation/integrity_checks.py).
 
 | Model | Valid % | Any exploit % |
 |---|---|---|
@@ -98,6 +90,8 @@ We measured whether untrained (base/instruct) LLMs produce exploit-containing Py
 | Amazon Nova Lite | 89.0 | 0.5 |
 | Gemma 3 4B | 45.5 | 1.0 |
 | Mistral 7B Instruct | 6.0 | 2.0 |
+
+All flagged programs are documented in [docs/base_rate_exploits.md](docs/base_rate_exploits.md).
 
 ### Reproducing
 
@@ -116,14 +110,15 @@ pixi run -e dev python scripts/sweep_base_rate.py \
     --output-dir artifacts/sweep_phase_b
 ```
 
-### Exploit detection
+## Documentation
 
-Beyond the structural checker (`check_pymc_model`), the sweep applies two integrity checks defined in [`evaluation/integrity_checks.py`](src/ppl_synthesis_reward_hacking/evaluation/integrity_checks.py):
-
-- **Fabricated data** (`check_fabricated_data`): compares the total number of observed data points in the compiled model against the expected data dict. Flags models that create extra observed variables to inflate the likelihood.
-- **Data-ignored perturbation test** (`check_data_used`): re-executes the model with halved data arrays and compares `point_logps()` at the default initial point. If the log-probabilities are identical, the model does not depend on its observed data.
-
-All flagged programs are documented in [docs/base_rate_exploits.md](docs/base_rate_exploits.md).
+- [Quickstart](docs/quickstart.md)
+- [Architecture](docs/architecture.md)
+- [Configuration](docs/configuration.md)
+- [SafeStan guide](docs/safestan-guide.md)
+- [Scoring methods](docs/scoring.md)
+- [Base-rate exploits](docs/base_rate_exploits.md)
+- [SafeStan integration provenance](docs/provenance/safestan_integration.md)
 
 ## All scripts
 
