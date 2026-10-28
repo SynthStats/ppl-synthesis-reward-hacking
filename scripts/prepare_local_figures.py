@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare local-only paper figures for the current experiments.
-
-This script orchestrates `scripts/make_grpo_figures.py` for a run list and
-writes outputs into the local paper clone under `background-documents/...-local`.
-It never touches the Overleaf git clone.
-"""
+"""Run scripts/make_grpo_figures.py for a list of training runs."""
 
 from __future__ import annotations
 

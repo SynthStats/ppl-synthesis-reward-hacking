@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
-"""Evaluate LH exemplar catalog through the full SStan mitigation pipeline.
+"""Evaluate a caller-supplied programme catalogue through the SStan pipeline.
 
-Loads the 18 LH programs from memory/lh_examples.md plus 5 honest baselines,
-runs each through: heuristic tagger, LLM transpiler, regex checker, and
-optionally cmdsafestan. Outputs JSON, markdown, and LaTeX tables for Part B
-paper evidence.
+Read Markdown entries headed ``### P<number>: <description>`` with one fenced
+Python listing per entry. Add five honest baselines and write evaluation tables.
 
 Usage:
     pixi run -e dev python scripts/eval_sstan_exemplars.py \
-        --output-dir .scratch/sstan_exemplars \
-        [--transpiler-model glm-5] \
-        [--transpiler-api-key-env ZHIPUAI_API_KEY] \
-        [--use-cmdsafestan] \
-        [--dry-run]
+        --lh-examples examples/sstan_exemplars.md \
+        --output-dir artifacts/sstan_exemplars
 """
 
 from __future__ import annotations
@@ -356,13 +351,13 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--output-dir",
         type=Path,
-        default=Path(".scratch/sstan_exemplars"),
+        default=Path("artifacts/sstan_exemplars"),
     )
     p.add_argument(
         "--lh-examples",
         type=Path,
-        default=Path("memory/lh_examples.md"),
-        help="Path to LH examples markdown catalog",
+        required=True,
+        help="Path to a Markdown catalogue of LH examples",
     )
     p.add_argument("--transpiler-model", default="glm-5")
     p.add_argument("--transpiler-api-key-env", default="ZHIPUAI_API_KEY")

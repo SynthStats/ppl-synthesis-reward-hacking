@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 import sys
 from pathlib import Path
 
@@ -169,3 +170,44 @@ def test_run_tinker_smoke_calls_script(monkeypatch):
     assert cmd[0] == "bash"
     assert cmd[-3:] == ["1.2.3.4", "8000", "120"]
     assert cmd[1].endswith("scripts/runpod/smoke_tinker_api.sh")
+
+
+def test_rsync_uploads_only_tracked_files(tmp_path, monkeypatch):
+    mod = _load_module()
+    source = tmp_path / "source"
+    destination = tmp_path / "destination"
+    source.mkdir()
+    destination.mkdir()
+    subprocess.run(["git", "init", "-q", str(source)], check=True)
+    (source / "models").mkdir()
+    (source / "models" / "model with spaces.py").write_text("model = 1\n")
+    (source / "line\nbreak.txt").write_text("tracked\n")
+    (source / ".gitignore").write_text("ignored-output/\n")
+    subprocess.run(
+        ["git", "-C", str(source), "add", ".gitignore", "models", "line\nbreak.txt"],
+        check=True,
+    )
+    (source / "models" / "untracked.py").write_text("local = 1\n")
+    (source / "local-output.txt").write_text("local\n")
+    (source / "ignored-output").mkdir()
+    (source / "ignored-output" / "result.txt").write_text("local\n")
+    (source / ".local-cache").mkdir()
+    (source / ".local-cache" / "result.txt").write_text("local\n")
+    monkeypatch.setattr(mod, "REPO_ROOT", str(source))
+    run = subprocess.run
+
+    def transport(cmd, **kwargs):
+        if cmd[0] == "ssh":
+            return subprocess.CompletedProcess(cmd, 0)
+        if cmd[0] == "rsync":
+            cmd = [*cmd[:-1], str(destination) + "/"]
+        return run(cmd, **kwargs)
+
+    monkeypatch.setattr(mod.subprocess, "run", transport)
+    mod.rsync_to_pod("127.0.0.1", 22)
+
+    transferred = {
+        p.relative_to(destination).as_posix() for p in destination.rglob("*") if p.is_file()
+    }
+    assert transferred == {".gitignore", "models/model with spaces.py", "line\nbreak.txt"}
+    assert (destination / "models" / "model with spaces.py").read_text() == "model = 1\n"

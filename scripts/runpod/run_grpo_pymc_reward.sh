@@ -1,7 +1,7 @@
 #!/bin/bash
 # GRPO training with PyMC reward on a RunPod GPU pod.
 #
-# Runs inside the pod after rsync from Contabo.
+# Runs inside the pod after the repository is uploaded.
 # Uses pip with explicit CUDA wheel index (uv's [tool.uv] config doesn't apply to pip).
 #
 # Usage (called by launch.py, not directly):

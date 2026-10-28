@@ -1,7 +1,6 @@
 """GRPO (Group Relative Policy Optimization) components.
 
-Training uses only reported_reward. Normalization check (∫ Z_p ≠ 1)
-is the sole hacking detection signal.
+Computes group-relative advantages from program rewards.
 """
 
 from __future__ import annotations

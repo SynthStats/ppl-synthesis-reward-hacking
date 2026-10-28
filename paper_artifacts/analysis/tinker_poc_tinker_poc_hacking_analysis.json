@@ -1,5 +1,5 @@
 {
-  "run_dir": "/Users/youdar/GitHub/ppl-synthesis-reward-hacking/artifacts/tinker_poc",
+  "run_dir": "artifacts/tinker_poc",
   "analysis_options": {
     "exclude_clipped": false,
     "winsorize": null

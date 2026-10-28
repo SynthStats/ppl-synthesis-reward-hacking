@@ -4,8 +4,6 @@
 Outputs a LaTeX `tabular` (booktabs) showing whether each gate accepts/rejects
 representative honest and exploit cases.
 
-This is meant to be *reproducible* and to complement unit tests, not replace them.
-
 Usage:
     pixi run -e dev python scripts/make_safety_gate_matrix.py \\
         --out paper_artifacts/safety_gate_matrix_table.tex \\

@@ -2,7 +2,7 @@
 """Launch training services on a RunPod GPU pod.
 
 The launcher manages a complete pod lifecycle: create the pod, poll until SSH
-is reachable, rsync the repo (excluding .git, artifacts, .env, and virtualenvs),
+is reachable, rsync the files tracked by Git,
 start training inside a tmux session named "train", optionally run a smoke
 check, then attach you to the session. When you detach (Ctrl+B, D), it asks
 whether to terminate the pod. Ctrl+C or any unhandled error auto-terminates.
@@ -40,13 +40,9 @@ Environment variables (from .env or shell):
                          (example: "git+https://github.com/jkarwowski/cmdsafestan.git")
 
 SSH: the launcher uses BatchMode=yes (no interactive password prompts). If your
-SSH key isn't in the default location, pass --identity-file (-i). RunPod maps
+SSH key is not in the default location, pass --identity-file (-i). RunPod maps
 container port 22 to a random public port; the launcher extracts this from pod
 metadata and passes -p <port> to ssh/rsync/scp.
-
-Rsync exclusions: .git, .env, .env.*, .scratch/, .notes/, .archive/, artifacts/,
-background-documents/, cmdsafestan/, __pycache__, .mypy_cache, .ruff_cache,
-.pytest_cache, .specstory, .vscode, .pixi, .venv, .dgx-venv, wandb-dir/.
 
 The tmux session on the pod is named "train". Reattach manually with:
     ssh -p <port> root@<ip> -t 'tmux attach -t train'
@@ -103,27 +99,6 @@ SSH_OPTIONS = [
     "ServerAliveCountMax=3",
     "-o",
     "BatchMode=yes",
-]
-RSYNC_EXCLUDE = [
-    ".git",
-    ".env",
-    ".env.*",
-    ".scratch/",
-    ".notes/",
-    ".archive/",
-    "artifacts/",
-    "background-documents/",
-    "cmdsafestan/",
-    "__pycache__",
-    ".mypy_cache",
-    ".ruff_cache",
-    ".pytest_cache",
-    ".specstory",
-    ".vscode",
-    ".pixi",
-    ".venv",
-    ".dgx-venv",
-    "wandb-dir/",
 ]
 RSYNC_MAX_RETRIES = 3
 RSYNC_RETRY_DELAY = 5
@@ -293,9 +268,11 @@ def rsync_to_pod(ip: str, port: int, identity_file: str | None = None) -> None:
     if not shutil.which("rsync"):
         raise RuntimeError("rsync not found on PATH. Install rsync to continue.")
 
-    exclude_args = []
-    for pat in RSYNC_EXCLUDE:
-        exclude_args.extend(["--exclude", pat])
+    tracked_files = subprocess.run(
+        ["git", "-C", REPO_ROOT, "ls-files", "-z"],
+        check=True,
+        capture_output=True,
+    ).stdout
 
     ssh_parts = ["ssh", "-p", str(port), *SSH_OPTIONS]
     if identity_file:
@@ -308,7 +285,8 @@ def rsync_to_pod(ip: str, port: int, identity_file: str | None = None) -> None:
         "--delete",
         "-e",
         ssh_transport,
-        *exclude_args,
+        "--from0",
+        "--files-from=-",
         f"{REPO_ROOT}/",
         f"root@{ip}:{REMOTE_DIR}/",
     ]
@@ -324,7 +302,7 @@ def rsync_to_pod(ip: str, port: int, identity_file: str | None = None) -> None:
     )
 
     for attempt in range(1, RSYNC_MAX_RETRIES + 1):
-        result = subprocess.run(cmd)
+        result = subprocess.run(cmd, input=tracked_files)
         if result.returncode == 0:
             print("Sync complete.")
             return

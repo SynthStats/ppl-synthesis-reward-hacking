@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
-"""GRPO training via TRL GRPOTrainer on Oxford ARC.
+"""Train a toy probabilistic-programme policy with TRL GRPOTrainer.
 
-Replaces Tinker API with HuggingFace TRL for local GPU training.
-Training uses only reported_reward (train-set). Oracle (holdout)
-is logged but never enters training.
+Use the train-set score as the reward and log the held-out score.
 
-Usage (compute node):
-    python scripts/trl_reward_hacking_arc.py --n-steps 50
-
-Usage (SLURM):
-    sbatch scripts/arc/run_grpo.sh
+Usage:
+    python scripts/trl_toy_training.py --n-steps 50
 """
 
 from __future__ import annotations
@@ -262,7 +257,7 @@ def run_trl_training(config: GRPOConfig) -> dict:
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Emergent reward hacking via TRL GRPO training on ARC"
+        description="Toy probabilistic-programme training with TRL GRPO"
     )
     parser.add_argument(
         "--n-steps",
@@ -297,7 +292,7 @@ def parse_args():
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="artifacts/grpo_arc",
+        default="artifacts/grpo_toy",
         help="Output directory for results",
     )
     return parser.parse_args()

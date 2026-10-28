@@ -2,9 +2,8 @@
 """Measure base LH rates for the untrained model via Tinker API.
 
 Generates completions from the base model (no RL training), scores with
-SMC log marginal likelihood, and checks normalization.  Produces the
-Part A baseline for the paper: any post-training exploit rate above
-this establishes emergence.
+SMC log marginal likelihood, and checks normalisation.  Produces the
+untrained-model comparison for post-training exploit rates.
 
 Usage (any machine with `.env` sourced and `TINKER_API_KEY` set):
 

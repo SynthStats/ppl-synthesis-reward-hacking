@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run W&B sweep agents from CLI.
 
-Supports local/VPS agents directly and can be used on cluster head nodes
+Supports agents on a local or remote machine and can be used on cluster head nodes
 where Hydra submitit handles per-trial SLURM job submission.
 """
 

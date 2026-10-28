@@ -5,7 +5,7 @@ Examples:
   python scripts/report_run_progress.py
   python scripts/report_run_progress.py --watch-seconds 60
   python scripts/report_run_progress.py --run-dir artifacts/sweeps/tinker_20260223_103211_337082
-  python scripts/report_run_progress.py --json --out .scratch/live_progress.json
+  python scripts/report_run_progress.py --json --out artifacts/live_progress.json
 """
 
 from __future__ import annotations

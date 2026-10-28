@@ -1,12 +1,6 @@
 """Out-of-band Tinker session keepalive using a separate OS process.
 
-The Tinker SDK runs its heartbeat as an asyncio task in a background thread.
-Under CPU contention (8+ concurrent scoring runs on Contabo), that thread
-gets starved, heartbeat HTTP requests timeout, and the Tinker server
-terminates the session after ~160s of silence.
-
-This module spawns a dedicated multiprocessing.Process that sends heartbeats
-via raw HTTP, bypassing the GIL and asyncio contention entirely.
+A separate process sends Tinker heartbeats while the main process scores PyMC programs.
 """
 
 from __future__ import annotations

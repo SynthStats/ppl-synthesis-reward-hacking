@@ -1,8 +1,6 @@
 """SMC-based marginal likelihood scoring for PyMC models.
 
-Replaces point_logps() scoring with Sequential Monte Carlo estimation
-of the marginal log-likelihood, which is the quantity that formal
-likelihood hacking inflates (integral Z_p != 1).
+Estimates the marginal log-likelihood with sequential Monte Carlo.
 """
 
 from __future__ import annotations

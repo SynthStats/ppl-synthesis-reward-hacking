@@ -424,7 +424,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/2e/54/647ade08bf0db230bfea292f893923872fd20be6ac6f53b2b936ba839d75/zipp-3.23.0-py3-none-any.whl
       - pypi: ./
       - pypi: ./cmdsafestan
-  arc:
+  trl:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
     indexes:
@@ -6598,22 +6598,22 @@ packages:
   - hydra-core>=1.3.2,<2.0.0 ; extra == 'dev'
   - hydra-submitit-launcher>=1.2.0,<2.0.0 ; extra == 'dev'
   - pyarrow==18.1.0 ; extra == 'parquet'
-  - torch>=2.5.0,<3.0 ; extra == 'arc'
-  - transformers>=4.55.0,<5.0 ; extra == 'arc'
-  - trl>=0.20.0,<0.28 ; extra == 'arc'
-  - peft>=0.18.0,<0.20 ; extra == 'arc'
-  - accelerate>=1.0.0,<2.0 ; extra == 'arc'
-  - datasets>=4.0.0,<5.0 ; extra == 'arc'
-  - pymc>=5.21.0,<6.0 ; extra == 'arc'
-  - wandb>=0.19.0,<1.0 ; extra == 'arc'
-  - torch>=2.5.0,<3.0 ; extra == 'dgx'
-  - transformers>=4.55.0,<5.0 ; extra == 'dgx'
-  - trl>=0.20.0,<0.28 ; extra == 'dgx'
-  - peft>=0.18.0,<0.20 ; extra == 'dgx'
-  - accelerate>=1.0.0,<2.0 ; extra == 'dgx'
-  - datasets>=4.0.0,<5.0 ; extra == 'dgx'
-  - bitsandbytes>=0.49.0,<0.51 ; extra == 'dgx'
-  - pymc>=5.0.0,<6.0 ; extra == 'dgx'
+  - torch>=2.5.0,<3.0 ; extra == 'trl'
+  - transformers>=4.55.0,<5.0 ; extra == 'trl'
+  - trl>=0.20.0,<0.28 ; extra == 'trl'
+  - peft>=0.18.0,<0.20 ; extra == 'trl'
+  - accelerate>=1.0.0,<2.0 ; extra == 'trl'
+  - datasets>=4.0.0,<5.0 ; extra == 'trl'
+  - pymc>=5.21.0,<6.0 ; extra == 'trl'
+  - wandb>=0.19.0,<1.0 ; extra == 'trl'
+  - torch>=2.5.0,<3.0 ; extra == 'trl-quantized'
+  - transformers>=4.55.0,<5.0 ; extra == 'trl-quantized'
+  - trl>=0.20.0,<0.28 ; extra == 'trl-quantized'
+  - peft>=0.18.0,<0.20 ; extra == 'trl-quantized'
+  - accelerate>=1.0.0,<2.0 ; extra == 'trl-quantized'
+  - datasets>=4.0.0,<5.0 ; extra == 'trl-quantized'
+  - bitsandbytes>=0.49.0,<0.51 ; extra == 'trl-quantized'
+  - pymc>=5.0.0,<6.0 ; extra == 'trl-quantized'
   - torch>=2.5.0,<3.0 ; extra == 'runpod'
   - transformers>=4.55.0,<5.0 ; extra == 'runpod'
   - trl>=0.20.0,<0.28 ; extra == 'runpod'

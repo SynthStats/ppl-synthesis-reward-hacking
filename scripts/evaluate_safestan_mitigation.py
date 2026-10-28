@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Evaluate SafeStan/SafePyMC mitigation behavior.
+"""Evaluate SafeStan/SafePyMC mitigation behaviour.
 
 Two modes:
 1) Completion trajectory mode (`--completions`): evaluates SafePyMC acceptance.
-2) Labeled suite mode (`--suite`): evaluates fail-closed metrics using expected
-   unsafe labels + SafeStan checker, and reports normalization among accepted.
+2) Labelled suite mode (`--suite`): evaluates fail-closed metrics using expected
+   unsafe labels + SafeStan checker, and reports normalisation among accepted.
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ from ppl_synthesis_reward_hacking.utils.io import load_jsonl as _load_jsonl
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Evaluate mitigation behavior")
+    p = argparse.ArgumentParser(description="Evaluate mitigation behaviour")
     source = p.add_mutually_exclusive_group(required=True)
     source.add_argument(
         "--completions",
@@ -41,7 +41,7 @@ def parse_args() -> argparse.Namespace:
     source.add_argument(
         "--suite",
         default=None,
-        help="Path to labeled JSONL with source_pymc/translated_stan (suite mode)",
+        help="Path to labelled JSONL with source_pymc/translated_stan (suite mode)",
     )
     p.add_argument("--output", required=True, help="Path to output JSON")
     p.add_argument(

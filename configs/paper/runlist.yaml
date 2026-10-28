@@ -14,8 +14,7 @@ conditions:
   - name: run7_part_a_emergence
     label: "Run 7 Part A (seeds 0 + 10k)"
     runs:
-      # These run dirs are archived completion logs; they intentionally provide
-      # paper metadata overrides inline because hydra sidecars are not always present.
+      # Per-run metadata for completion-log analysis.
       - path: artifacts/sweeps/tinker_20260217_163634
         paper_track: part_a_emergence
         claim_mode: formal_lh

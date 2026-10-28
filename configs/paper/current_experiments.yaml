@@ -1,7 +1,4 @@
-# Local-only figure prep for current GRPO/Tinker experiments.
-# Intentionally targets the local paper clone, not the Overleaf git clone.
-
-out_root: background-documents/ai-scientist-likelihood-hacking-paper-local/paper_artifacts
+out_root: artifacts/figures/current_experiments
 
 experiments:
   - name: run7_seed0
@@ -16,7 +13,7 @@ experiments:
     run_dir: artifacts/sweeps/tinker_20260219_051635
     late_batch_cutoff: 0
 
-  # Historical Goodhart prelude (non-paper claim evidence; local diagnostics only).
+  # Reference experiment for the score comparison.
   - name: run6_reference
     run_dir: artifacts/grpo_run_7050740
     late_batch_cutoff: 800

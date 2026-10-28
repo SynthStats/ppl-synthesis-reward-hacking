@@ -3,10 +3,10 @@
 
 Reads GRPO completions.jsonl and produces four artifacts:
 
-  1. lh_emergence.pdf        — normalization metrics over training steps
-  2. lh_taxonomy_evolution.pdf — LH family prevalence (stacked area)
-  3. lh_taxonomy_bar.pdf     — LH family counts + log_mass distribution
-  4. code_comparison.tex     — honest vs hacked code side-by-side
+  1. lh_emergence.pdf: normalisation metrics over training steps
+  2. lh_taxonomy_evolution.pdf: likelihood-hacking family prevalence (stacked area)
+  3. lh_taxonomy_bar.pdf: family counts and log_mass distribution
+  4. code_comparison.tex: comparison of honest and likelihood-hacking code
 
 Usage:
     pixi run -e dev python scripts/make_grpo_figures.py [--run-dir PATH] [--out PATH]
@@ -42,12 +42,7 @@ from ppl_synthesis_reward_hacking.reporting.code_examples import (  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_RUN = REPO_ROOT / "artifacts" / "grpo_run_7050740"
-DEFAULT_OUT = (
-    REPO_ROOT
-    / "background-documents"
-    / "ai-scientist-likelihood-hacking-paper-local"
-    / "paper_artifacts"
-)
+DEFAULT_OUT = REPO_ROOT / "artifacts" / "figures"
 
 apply_publication_style(
     font_size=8,

@@ -78,5 +78,5 @@
       "mean_log_mass": 0.002697583337096005
     }
   ],
-  "output_jsonl": "/Users/youdar/GitHub/ppl-synthesis-reward-hacking/paper_artifacts/eval/tinker_poc/tinker_poc/normalization.jsonl"
+  "output_jsonl": "paper_artifacts/eval/tinker_poc/tinker_poc/normalization.jsonl"
 }

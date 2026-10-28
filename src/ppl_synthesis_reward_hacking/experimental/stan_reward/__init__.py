@@ -1,7 +1,6 @@
 """Staged Stan reward integration path.
 
-This namespace integrates upstream SafeStan/cmdsafestan work while remaining
-opt-in to protect paper-track comparability.
+This namespace contains the opt-in SafeStan/cmdsafestan integration.
 """
 
 from __future__ import annotations

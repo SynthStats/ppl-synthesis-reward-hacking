@@ -2,8 +2,8 @@
 """Base-rate exploit sweep using a LOCAL HuggingFace model (no API needed).
 
 Runs the same analysis pipeline as sweep_base_rate.py but generates
-completions from a local transformers model. Designed for measuring the
-exact base rate of Qwen/Qwen3-4B-Instruct-2507 (the training model).
+completions from a local Transformers model. It estimates the base rate for
+Qwen/Qwen3-4B-Instruct-2507.
 
 Usage (any machine with the model cached):
     pixi run -e dev python scripts/sweep_base_rate_local.py \

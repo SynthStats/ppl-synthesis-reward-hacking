@@ -1,7 +1,6 @@
 """Bridge to cmdsafestan compiler-level checker.
 
-cmdsafestan provides authoritative safety verdicts via compilation and
-static analysis, unlike our regex-based check_sstan(). ~3.5s per model.
+cmdsafestan checks Stan programs through compilation and static analysis.
 
 Install: pip install -e path/to/cmdsafestan (requires opam + dune build)
 """

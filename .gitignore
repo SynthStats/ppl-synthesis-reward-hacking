@@ -39,11 +39,14 @@ htmlcov/
 
 artifacts/
 wandb-dir/
-background-documents/
-.scratch/
-.notes/
-.repo_ignore
-CLAUDE.md
-AGENTS.md
-.cursorindexingignore
-.specstory
+*-documents/
+.*
+!.env.example
+!.githooks/
+!.github/
+!.gitignore
+!.gitmodules
+!.python-version
+[A-Z]*.md
+!README.md
+!examples/sstan_exemplars.md

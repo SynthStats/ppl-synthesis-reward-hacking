@@ -1,6 +1,6 @@
 """LLM PyMC-to-Stan transpiler used for SafeStan verification.
 
-Strict mode preserves behavior, including bugs/exploits.
+Strict mode asks the language model to preserve the source program's behaviour.
 """
 
 from __future__ import annotations

@@ -36,7 +36,7 @@ dev = [
 parquet = [
     "pyarrow==18.1.0",
 ]
-arc = [
+trl = [
     "torch>=2.5.0,<3.0",
     "transformers>=4.55.0,<5.0",
     "trl>=0.20.0,<0.28",
@@ -46,7 +46,7 @@ arc = [
     "pymc>=5.21.0,<6.0",
     "wandb>=0.19.0,<1.0",
 ]
-dgx = [
+trl-quantized = [
     "torch>=2.5.0,<3.0",
     "transformers>=4.55.0,<5.0",
     "trl>=0.20.0,<0.28",
@@ -138,10 +138,10 @@ ppl-synthesis-reward-hacking = { path = ".", editable = true, extras = ["parquet
 [tool.pixi.feature.all.pypi-dependencies]
 ppl-synthesis-reward-hacking = { path = ".", editable = true, extras = ["all"] }
 
-[tool.pixi.feature.arc.pypi-dependencies]
-ppl-synthesis-reward-hacking = { path = ".", editable = true, extras = ["arc"] }
+[tool.pixi.feature.trl.pypi-dependencies]
+ppl-synthesis-reward-hacking = { path = ".", editable = true, extras = ["trl"] }
 
-[tool.pixi.feature.arc.target.linux-64.dependencies]
+[tool.pixi.feature.trl.target.linux-64.dependencies]
 cuda-toolkit = "12.4.*"
 
 [tool.pixi.environments]
@@ -149,7 +149,7 @@ default = {features = [], solve-group = "default"}
 dev = {features = ["dev"], solve-group = "default"}
 parquet = {features = ["parquet"], solve-group = "default"}
 all = {features = ["all"], solve-group = "default"}
-arc = {features = ["arc"], solve-group = "arc"}
+trl = {features = ["trl"], solve-group = "trl"}
 
 [tool.pixi.tasks]
 psrh = "psrh"

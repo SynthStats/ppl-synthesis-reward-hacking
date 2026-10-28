@@ -1,4 +1,4 @@
-"""Phase 1 acceptance tests for the reward hacking framework."""
+"""Acceptance tests for toy-model reward evaluation."""
 
 from __future__ import annotations
 

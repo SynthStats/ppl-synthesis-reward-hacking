@@ -183,7 +183,7 @@ class TestToyBackendContract:
             )
 
     def test_gap_equals_n_times_log_mass(self, backend: ToyBackend, dataset_8d: Dataset):
-        """CRITICAL: gap == n_holdout * log_mass (key invariant from GPT-5.2).
+        """Check gap == n_holdout * log_mass.
 
         This formalizes the 'hackable vs oracle' distinction and is the
         central mathematical identity for the reward hacking claim.
