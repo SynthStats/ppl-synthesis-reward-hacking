@@ -1,18 +1,24 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/mark-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/mark.svg">
     <img src="assets/mark.svg" alt="SynthStats: ppl-synthesis-reward-hacking" width="96">
   </picture>
-</p>
-
-<p align="center">
-  <a href="https://proceedings.mlr.press/v337/karwowski26a.html"><img src="https://img.shields.io/badge/paper-UAI_2026-5C56A5?labelColor=5A6078" alt="Paper: Likelihood hacking in probabilistic program synthesis, UAI 2026"></a>
-  <a href="pyproject.toml"><img src="https://img.shields.io/badge/python-%E2%89%A53.11-5C56A5?labelColor=5A6078" alt="Python: ≥3.11"></a>
 </p>
 
 # ppl-synthesis-reward-hacking
 
 These experiments measure likelihood hacking in PyMC and Stan program synthesis.
+
+<p align="center">
+  <a href="https://synthstats.org"><img src="https://img.shields.io/badge/website-synthstats.org-5C56A5?labelColor=5A6078" alt="Website: synthstats.org"></a>
+  <a href="https://proceedings.mlr.press/v337/karwowski26a.html"><img src="https://img.shields.io/badge/paper-UAI_2026-5C56A5?labelColor=5A6078" alt="Paper: Likelihood hacking in probabilistic program synthesis, UAI 2026"></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/python-%E2%89%A53.11-5C56A5?labelColor=5A6078" alt="Python: ≥3.11"></a>
+</p>
+
+<p align="center">
+  <img src="assets/demo.gif" alt="Terminal demo: generate the bernoulli_1d dataset with psrh" width="800">
+</p>
 
 ## Install
 
